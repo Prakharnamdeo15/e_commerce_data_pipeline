@@ -15,7 +15,29 @@
 #       - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
 #       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
 #       - ALLOW_PLAINTEXT_LISTENER=yes
+
+
 services:
+
+  spark:
+    image: apache/spark:3.5.1
+    container_name: spark
+
+    ports:
+      - "4040:4040"
+    volumes:
+      - ./spark_jobs:/opt/spark/jobs
+      - ./data:/data
+      - ./ivy:/home/spark/.ivy2
+
+    environment:
+    - SPARK_SUBMIT_OPTIONS=--packages io.delta:delta-spark_2.12:3.1.0,org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1
+    
+    command: tail -f /dev/null
+    depends_on:
+      - kafka
+
+      
   kafka:
     image: confluentinc/cp-kafka:7.6.0
     container_name: kafka

@@ -26,6 +26,7 @@ order_versions = {}
 # Track active orders for realistic lifecycle
 active_orders = []
 categories = ["electronics","fashion","home"]
+payment_type = ["UPI","CARD","COD"]
 def delivery_report(err, msg):
     if err:
         print(f"Delivery failed: {err}")
@@ -63,6 +64,7 @@ def generate_order_event():
 
     event = {
         "event_id": str(uuid.uuid4()),
+        "user_id": f"U{random.randint(1000,5000)}",
         "order_id": order_id,
         "event_type": event_type,
         "version": version,
@@ -70,7 +72,7 @@ def generate_order_event():
         "status": event_type,
         "event_time": event_time.isoformat(),
         "category": random.choice(categories),
-        "payment_type": random.choice(["UPI","CARD","COD"])
+        "payment_type": random.choice(payment_type)
     }
 
     # Occasionally produce duplicate
@@ -88,6 +90,7 @@ def generate_order_event():
         value=json.dumps(event),
         on_delivery=delivery_report
     )
+    print(event)
 
     producer.poll(0)
 
@@ -123,4 +126,4 @@ def burst_events(count: int = 1000):
 
 @app.get("/health")
 def health():
-    return {"status": "producer running"}
+    return {"status": "producer running "}
